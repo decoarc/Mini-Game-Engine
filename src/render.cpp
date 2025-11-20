@@ -1,7 +1,7 @@
 #include "renderer.h"
 #include "window.h"
 
-// Construtor
+//Construtor - inicializa variáveis
 Renderer::Renderer(Window* window)
     : m_hwnd(window->GetHandle())
     , m_hdc(nullptr)
@@ -13,7 +13,7 @@ Renderer::Renderer(Window* window)
 {
 }
 
-// Destrutor
+//Destrutor - limpa recursos
 Renderer::~Renderer() {
     if (m_memoryDC && m_oldBitmap) {
         SelectObject(m_memoryDC, m_oldBitmap);
@@ -29,7 +29,7 @@ Renderer::~Renderer() {
     }
 }
 
-// Inicializa o renderer
+//Inicializa o renderer - cria device contexts e bitmap
 bool Renderer::Initialize() {
     m_hdc = ::GetDC(m_hwnd);
     if (!m_hdc) {
@@ -54,17 +54,17 @@ bool Renderer::Initialize() {
     return true;
 }
 
-// Inicia frame (limpa buffer)
+//Inicia frame - prepara buffer para desenhar
 void Renderer::BeginFrame() {
     // Buffer já está pronto para desenhar
 }
 
-// Finaliza frame (copia buffer para tela)
+//Finaliza frame - copia buffer para tela
 void Renderer::EndFrame() {
     BitBlt(m_hdc, 0, 0, m_width, m_height, m_memoryDC, 0, 0, SRCCOPY);
 }
 
-// Limpa com uma cor
+//Limpa tela com uma cor
 void Renderer::Clear(COLORREF color) {
     RECT rect = { 0, 0, m_width, m_height };
     HBRUSH brush = CreateSolidBrush(color);
@@ -72,7 +72,7 @@ void Renderer::Clear(COLORREF color) {
     DeleteObject(brush);
 }
 
-// Desenha um bitmap
+//Desenha um bitmap na posição especificada
 void Renderer::DrawBitmap(HBITMAP bitmap, int x, int y, int width, int height) {
     HDC tempDC = CreateCompatibleDC(m_memoryDC);
     HBITMAP oldBmp = (HBITMAP)SelectObject(tempDC, bitmap);

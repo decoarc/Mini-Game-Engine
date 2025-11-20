@@ -3,8 +3,10 @@
 #include <cstring>
 #include <cstdio>
 
+//Variável estática para acessar instância no callback
 static Window* g_windowInstance = nullptr;
 
+//Construtor - define parâmetros da janela
 Window::Window(int width, int height, const char* title)
     : m_hwnd(nullptr)
     , m_hInstance(GetModuleHandle(nullptr))
@@ -15,13 +17,16 @@ Window::Window(int width, int height, const char* title)
     strcpy_s(m_title, sizeof(m_title), title);
 }
 
+//Destrutor - destroi a janela
 Window::~Window() {
     if (m_hwnd) {
         DestroyWindow(m_hwnd);
     }
 }
 
+//Inicializa a janela - cria e mostra
 bool Window::Initialize() {
+    //Registrar classe de janela
     WNDCLASS wc = {};
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = m_hInstance;
@@ -33,6 +38,7 @@ bool Window::Initialize() {
         return false;
     }
     
+    //Criar janela
     m_hwnd = CreateWindowEx(
         0,
         "MiniGameEngineWindow",
@@ -49,9 +55,11 @@ bool Window::Initialize() {
         return false;
     }
     
+    //Guardar ponteiro da instância
     g_windowInstance = this;
     SetWindowLongPtr(m_hwnd, GWLP_USERDATA, (LONG_PTR)this);
     
+    //Mostrar janela e dar foco
     ShowWindow(m_hwnd, SW_SHOW);
     UpdateWindow(m_hwnd);
     SetFocus(m_hwnd);
@@ -59,6 +67,7 @@ bool Window::Initialize() {
     return true;
 }
 
+//Processa mensagens do Windows
 bool Window::ProcessMessages() {
     MSG msg = {};
     while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
@@ -71,10 +80,12 @@ bool Window::ProcessMessages() {
     return true;
 }
 
+//Verifica se janela ainda está rodando
 bool Window::IsRunning() const {
     return m_hwnd != nullptr;
 }
 
+//Callback de mensagens do Windows
 LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
     
@@ -85,12 +96,14 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
             return 0;
 
         case WM_KEYDOWN:
+            //Notificar input quando tecla é pressionada
             if (window && window->m_input) {
                 window->m_input->OnKeyDown((int)wParam);
             }
             break;
         
         case WM_KEYUP:
+            //Notificar input quando tecla é solta
             if (window && window->m_input) {
                 window->m_input->OnKeyUp((int)wParam);
             }

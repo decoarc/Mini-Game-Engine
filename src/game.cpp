@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <windows.h>
 
+//Construtor - inicializa variáveis
 Game::Game() 
     : m_window(nullptr)
     , m_renderer(nullptr)
@@ -16,10 +17,12 @@ Game::Game()
 {
 }
 
+//Destrutor - limpa recursos
 Game::~Game() {
     Shutdown();
 }
 
+//Inicializa todos os sistemas do jogo
 bool Game::Initialize() {
     AllocConsole();
     FILE* pCout;
@@ -31,22 +34,26 @@ bool Game::Initialize() {
     
     printf("Console initialized. Press any key to test...\n");
     
+    //Criar janela
     m_window = new Window(800, 600, "Mini Game Engine");
     if (!m_window->Initialize()) {
         return false;
     }
     
+    //Criar renderer
     m_renderer = new Renderer(m_window);
     if (!m_renderer->Initialize()) {
         return false;
     }
     
+    //Criar input e conectar à janela
     m_input = new Input();
     m_window->SetInput(m_input);
     
     return true;
 }
 
+//Loop principal do jogo
 void Game::Run() {
     const float FIXED_TIME_STEP = 1.0f / 60.0f;
     float accumulator = 0.0f;
@@ -77,6 +84,7 @@ void Game::Run() {
     }
 }
 
+//Atualiza lógica do jogo
 void Game::Update(float deltaTime) {
     for (int i = 0; i < 256; i++) {
         if (m_input->IsKeyPressed(i)) {
@@ -97,12 +105,14 @@ void Game::Update(float deltaTime) {
     }
 }
 
+//Renderiza tudo na tela
 void Game::Render() {
     m_renderer->BeginFrame();
     m_renderer->Clear(RGB(50, 50, 50));
     m_renderer->EndFrame();
 }
 
+//Limpa todos os recursos
 void Game::Shutdown() {
     if (m_renderer) {
         delete m_renderer;
@@ -117,5 +127,6 @@ void Game::Shutdown() {
         m_window = nullptr;
     }
     
+    //Liberar console
     FreeConsole();
 }

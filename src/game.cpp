@@ -2,10 +2,12 @@
 #include "window.h"
 #include "renderer.h"
 #include "input.h"
+#include "sprite.h"
 #include <cstdio>
 #include <io.h>
 #include <fcntl.h>
 #include <windows.h>
+#include <fstream>
 
 //Construtor - inicializa variáveis
 Game::Game() 
@@ -31,8 +33,6 @@ bool Game::Initialize() {
     freopen_s(&pCout, "CONOUT$", "w", stdout);
     freopen_s(&pCerr, "CONOUT$", "w", stderr);
     freopen_s(&pCin, "CONIN$", "r", stdin);
-    
-    printf("Console initialized. Press any key to test...\n");
     
     //Criar janela
     m_window = new Window(800, 600, "Mini Game Engine");
@@ -86,30 +86,37 @@ void Game::Run() {
 
 //Atualiza lógica do jogo
 void Game::Update(float deltaTime) {
-    for (int i = 0; i < 256; i++) {
-        if (m_input->IsKeyPressed(i)) {
-            printf("Key %d (0x%02X) is pressed\n", i, i);
-            fflush(stdout);
-        }
-    }
-    
-    static bool spaceWasDown = false;
-    if (m_input->IsKeyDown(VK_SPACE)) {
-        if (!spaceWasDown) {
-            printf("The Space key was pressed!\n");
-            fflush(stdout);
-            spaceWasDown = true;
-        }
-    } else {
-        spaceWasDown = false;
-    }
+    //Lógica do jogo será adicionada aqui
 }
 
 //Renderiza tudo na tela
 void Game::Render() {
     m_renderer->BeginFrame();
     m_renderer->Clear(RGB(50, 50, 50));
+
+    HDC hdc = m_renderer->GetMemoryDC();
+    
+    if (!hdc) {
+        m_renderer->EndFrame();
+        return;
+    }
+    //Carregar e desenhar sprite de teste
+    static Sprite* testSprite = nullptr;
+    
+    if (!testSprite) {
+        testSprite = new Sprite();
+        testSprite->LoadFromFile("assets/sprites/test.bmp");
+    }
+
+    if (testSprite && testSprite->GetBitmap()) {
+        testSprite->Draw(hdc, 200, 100);
+    }
+    
+    
     m_renderer->EndFrame();
+    
+    //Forçar atualização da janela
+    InvalidateRect(m_window->GetHandle(), nullptr, FALSE);
 }
 
 //Limpa todos os recursos

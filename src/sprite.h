@@ -12,6 +12,7 @@ class Sprite {
         ~Sprite();
 
         bool LoadFromFile(const char* filename); //carregar imagem == filename
+        bool CreateTestBitmap(int width, int height); //criar bitmap de teste programaticamente
         void Draw(HDC hdc, int x, int y); //desenhar a sprite 
         int GetWidth() const { return m_width; } // pegar with e alvar no m_with
         int GetHeight() const { return m_height; } // pegar height e salvar no m_heught

@@ -61,7 +61,9 @@ void Renderer::BeginFrame() {
 
 //Finaliza frame - copia buffer para tela
 void Renderer::EndFrame() {
-    BitBlt(m_hdc, 0, 0, m_width, m_height, m_memoryDC, 0, 0, SRCCOPY);
+    if (m_hdc && m_memoryDC) {
+        BitBlt(m_hdc, 0, 0, m_width, m_height, m_memoryDC, 0, 0, SRCCOPY);
+    }
 }
 
 //Limpa tela com uma cor
